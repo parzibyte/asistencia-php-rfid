@@ -36,7 +36,7 @@ También tengo canal de YouTube: https://www.youtube.com/channel/UCroP4BTWjfM0Ck
     <link rel="stylesheet" href="css/all.min.css">
     <style>
         body {
-            padding-top: 80px;
+            padding-top: 100px;
         }
     </style>
 </head>
