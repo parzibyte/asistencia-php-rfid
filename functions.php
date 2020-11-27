@@ -27,6 +27,96 @@ También tengo canal de YouTube: https://www.youtube.com/channel/UCroP4BTWjfM0Ck
 ------------------------------------------------------------------------------------------------
 */ ?>
 <?php
+if (!defined("RFID_STATUS_FILE")) {
+    define("RFID_STATUS_FILE", "rfid_status");
+}
+if (!defined("RFID_STATUS_READING")) {
+    define("RFID_STATUS_READING", "r");
+}
+if (!defined("RFID_STATUS_PAIRING")) {
+    define("RFID_STATUS_PAIRING", "p");
+}
+if (!defined("PAIRING_EMPLOYEE_ID_FILE")) {
+    define("PAIRING_EMPLOYEE_ID_FILE", "pairing_employee_id_file");
+}
+
+function onRfidSerialRead($rfidSerial)
+{
+    if (getReaderStatus() === RFID_STATUS_PAIRING) {
+        pairEmployeeWithRfid($rfidSerial, getPairingEmployeeId());
+    } else {
+        saveEmployeeAttendance(getEmployeeIdByRfidSerial($rfidSerial));
+    }
+}
+function saveEmployeeAttendance($employeeId)
+{
+
+    $date = date("Y-m-d");
+    $status = "presence";
+    $query = "INSERT INTO employee_attendance(employee_id, date, status) VALUES (?, ?, ?)";
+    $db = getDatabase();
+    $statement = $db->prepare($query);
+    return $statement->execute([$employeeId, $date, $status]);
+}
+
+function setReaderForEmployeePairing($employeeId)
+{
+    setReaderStatus(RFID_STATUS_PAIRING);
+    setPairingEmployeeId($employeeId);
+}
+
+function setPairingEmployeeId($employeeId)
+{
+    file_put_contents(PAIRING_EMPLOYEE_ID_FILE, $employeeId);
+}
+
+function getPairingEmployeeId()
+{
+    return file_get_contents(PAIRING_EMPLOYEE_ID_FILE);
+}
+
+function pairEmployeeWithRfid($rfidSerial, $employeeId)
+{
+    $query = "INSERT INTO employee_rfid(employee_id, rfid_serial) VALUES (?, ?)";
+    $db = getDatabase();
+    $statement = $db->prepare($query);
+    return $statement->execute([$employeeId, $rfidSerial]);
+}
+
+function removeRfidFromEmployee($rfidSerial)
+{
+    $query = "DELETE FROM employee_rfid WHERE rfid_serial = ?";
+    $db = getDatabase();
+    $statement = $db->prepare($query);
+    return $statement->execute([$rfidSerial]);
+}
+
+function getEmployeeIdByRfidSerial($rfidSerial)
+{
+    $query = "SELECT e.id, e.name FROM employees e INNER JOIN employee_rfid
+    ON employee_rfid.employee_id = e.id
+    WHERE employee_rfid.rfid_serial = ?";
+
+    $db = getDatabase();
+    $statement = $db->prepare($query);
+    $statement->execute([$rfidSerial]);
+    return $statement->fetchObject();
+}
+
+function getReaderStatus()
+{
+    return file_get_contents(RFID_STATUS_FILE);
+}
+
+function setReaderStatus($newStatus)
+{
+    if (!in_array($newStatus, [RFID_STATUS_PAIRING, RFID_STATUS_READING])) {
+        return;
+    }
+
+    file_put_contents(RFID_STATUS_FILE, $newStatus);
+}
+
 function getEmployeesWithAttendanceCount($start, $end)
 {
     $query = "select employees.name, 

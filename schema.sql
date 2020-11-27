@@ -9,3 +9,9 @@ CREATE TABLE employee_attendance(
     status ENUM('presence', 'absence'),
     FOREIGN KEY (employee_id) REFERENCES employees(id) ON UPDATE CASCADE ON DELETE CASCADE
 );
+
+CREATE TABLE employee_rfid(
+    employee_id BIGINT UNSIGNED NOT NULL,
+    rfid_serial VARCHAR(11),
+    FOREIGN KEY (employee_id) REFERENCES employees(id) ON UPDATE CASCADE ON DELETE CASCADE
+);
