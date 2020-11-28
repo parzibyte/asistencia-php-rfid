@@ -40,12 +40,24 @@ if (!defined("PAIRING_EMPLOYEE_ID_FILE")) {
     define("PAIRING_EMPLOYEE_ID_FILE", "pairing_employee_id_file");
 }
 
+function getEmployeesWithRfid()
+{
+    $query = "SELECT employee_id, rfid_serial FROM employee_rfid";
+    $db = getDatabase();
+    $statement = $db->query($query);
+    return $statement->fetchAll();
+}
+
 function onRfidSerialRead($rfidSerial)
 {
     if (getReaderStatus() === RFID_STATUS_PAIRING) {
         pairEmployeeWithRfid($rfidSerial, getPairingEmployeeId());
+        setReaderStatus(RFID_STATUS_READING);
     } else {
-        saveEmployeeAttendance(getEmployeeIdByRfidSerial($rfidSerial));
+        $employee = getEmployeeByRfidSerial($rfidSerial);
+        if ($employee) {
+            saveEmployeeAttendance($employee->id);
+        }
     }
 }
 function saveEmployeeAttendance($employeeId)
@@ -77,6 +89,7 @@ function getPairingEmployeeId()
 
 function pairEmployeeWithRfid($rfidSerial, $employeeId)
 {
+    removeRfidFromEmployee($rfidSerial);
     $query = "INSERT INTO employee_rfid(employee_id, rfid_serial) VALUES (?, ?)";
     $db = getDatabase();
     $statement = $db->prepare($query);
@@ -91,7 +104,7 @@ function removeRfidFromEmployee($rfidSerial)
     return $statement->execute([$rfidSerial]);
 }
 
-function getEmployeeIdByRfidSerial($rfidSerial)
+function getEmployeeByRfidSerial($rfidSerial)
 {
     $query = "SELECT e.id, e.name FROM employees e INNER JOIN employee_rfid
     ON employee_rfid.employee_id = e.id
@@ -100,6 +113,14 @@ function getEmployeeIdByRfidSerial($rfidSerial)
     $db = getDatabase();
     $statement = $db->prepare($query);
     $statement->execute([$rfidSerial]);
+    return $statement->fetchObject();
+}
+function getEmployeeRfidById($employeeId)
+{
+    $query = "SELECT rfid_serial FROM employee_rfid WHERE employee_id = ?";
+    $db = getDatabase();
+    $statement = $db->prepare($query);
+    $statement->execute([$employeeId]);
     return $statement->fetchObject();
 }
 

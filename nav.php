@@ -40,7 +40,7 @@ También tengo canal de YouTube: https://www.youtube.com/channel/UCroP4BTWjfM0Ck
                 <a class="nav-link" href="employees.php">Employees <i class="fa fa-users"></i></a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="employees_pairing.php">RFID employees cards&nbsp;<i class="fa fa-id-card"></i></a>
+                <a class="nav-link" href="employees_rfid.php">RFID employees cards&nbsp;<i class="fa fa-id-card"></i></a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" href="attendance_register.php">Register attendance <i class="fa fa-check-double"></i></a>
