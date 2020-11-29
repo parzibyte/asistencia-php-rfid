@@ -60,10 +60,19 @@ function onRfidSerialRead($rfidSerial)
         }
     }
 }
-function saveEmployeeAttendance($employeeId)
+function deleteEmployeeAttendanceByIdAndDate($employeeId, $date)
 {
 
+    $query = "DELETE FROM employee_attendance where employee_id = ? and date = ?";
+    $db = getDatabase();
+    $statement = $db->prepare($query);
+    return $statement->execute([$employeeId, $date]);
+}
+
+function saveEmployeeAttendance($employeeId)
+{
     $date = date("Y-m-d");
+    deleteEmployeeAttendanceByIdAndDate($date, $employeeId);
     $status = "presence";
     $query = "INSERT INTO employee_attendance(employee_id, date, status) VALUES (?, ?, ?)";
     $db = getDatabase();
