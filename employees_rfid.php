@@ -76,7 +76,6 @@ include_once "nav.php";
     Vue.use(Toasted);
     let shouldCheck = true;
     const CHECK_PAIRING_EMPLOYEE_INTERVAL = 1000;
-    const UNSET_STATUS = "unset";
     new Vue({
         el: "#app",
         data: () => ({
