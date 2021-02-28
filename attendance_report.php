@@ -53,6 +53,7 @@ $employees = getEmployeesWithAttendanceCount($start, $end);
             <input required id="end" type="date" name="end" value="<?php echo $end ?>" class="form-control">
             <button class="btn btn-success ml-2">Filter</button>
         </form>
+        <a href="./download_employee_report.php?start=<?php echo $start ?>&end=<?php echo $end ?>" class="btn btn-info mb-2">Download Excel Report</a>
     </div>
     <div class="col-12">
         <div class="table-responsive">
