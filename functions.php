@@ -155,7 +155,7 @@ sum(case when status = 'absence' then 1 else 0 end) as absence_count
  from employee_attendance
  inner join employees on employees.id = employee_attendance.employee_id
  where date >= ? and date <= ?
- group by employee_id;";
+ group by employee_id, name;";
     $db = getDatabase();
     $statement = $db->prepare($query);
     $statement->execute([$start, $end]);
