@@ -72,7 +72,7 @@ function deleteEmployeeAttendanceByIdAndDate($employeeId, $date)
 function saveEmployeeAttendance($employeeId)
 {
     $date = date("Y-m-d");
-    deleteEmployeeAttendanceByIdAndDate($date, $employeeId);
+    deleteEmployeeAttendanceByIdAndDate($employeeId,$date);
     $status = "presence";
     $query = "INSERT INTO employee_attendance(employee_id, date, status) VALUES (?, ?, ?)";
     $db = getDatabase();
